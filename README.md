@@ -22,9 +22,13 @@ if git is not installed
 clone shrink repository to current directory  
 `$ git clone https://github.com/qrti/shrink.git`
 
+- - -
+
 #### necessary installs  
 `$ sudo apt-get update && sudo apt-get install dcfldd`  
 `$ sudo apt-get update && sudo apt-get install gparted`
+
+- - -
 
 #### execute  
 change directory  
@@ -36,15 +40,31 @@ make script executable once
 execute script  
 `$ sudo ./shrink.sh`
 
+- - -
+
 #### remarks  
+do not shrink images to their minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate
+
+when using the new SD card for the first time, expand the filesystem to fill its space and reboot
+
+from terminal  
+`sudo raspi-config`  
+*Expand Filesystem*
+
+**or**
+
+from command line  
+`sudo raspi-config --expand-rootfs`  
+`sudo reboot`
+
 the script is 'half automatic', meaning at one point it will start GParted on desktop and guide you what to do
 
-do not shrink images to their minimum, otherwise they won't start on your Raspberry, especially Raspbian Full Desktop images need some extra space, about >= 250 MB are advised
+the script was developed and tested on a VirtualBox Windows host with Linux Mint guest
 
-the script was developed and tested on a virtualBox windows host system with linux mint guest
-
-#### inspired by  
+inspired by  
 http://www.aoakley.com/articles/2015-10-09-resizing-sd-images.php
+
+- - -
 
 #### copyright  
 shrink is published under the terms of ISC license
