@@ -30,6 +30,23 @@ clone shrink repository to current directory
 
 - - -
 
+#### configure  
+before executing the script, insert your SD card
+
+enter the following at the command line and find the name of your SD device, there should be two entries, for example /dev/sdd1 and /dev/sdd2  
+`$ df -h`
+
+edit the script and enter your data between the quotation marks, for DEVICE omit the digit, so our example gets /dev/sdd, fill in your linux user name at USER  
+`$ nano shrink.sh`
+```
+DEVICE=""                   # source and target SD card device
+USER=""                     # linux user name
+```
+
+explore the top of the script to configure some more things
+
+- - -
+
 #### execute  
 change directory  
 `$ cd ~/shrink`
@@ -43,11 +60,11 @@ execute script
 - - -
 
 #### remarks  
-do not shrink images to their minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate
+do not shrink images to minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate
 
 when using the new SD card for the first time, expand the filesystem to fill its space and reboot
 
-from terminal  
+by raspi-config  
 `sudo raspi-config`  
 *Expand Filesystem*
 
