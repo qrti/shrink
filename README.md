@@ -1,6 +1,10 @@
 # shrink
 
-#### linux bash script to resize Raspberry SD card images
+#### linux bash script to resize Raspberry SD card images  
+needs a real or VM linux desktop system with hard disk and card reader
+cannot handle NOOBS images
+consider also further [remarks](# remarks)
+
 
 #### download  
 download repository from GitHub,  
@@ -60,6 +64,10 @@ execute script
 - - -
 
 #### remarks  
+needs a real or VM linux desktop system with hard disk and card reader
+
+cannot handle NOOBS images
+
 do not shrink images to minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate
 
 when using the new SD card for the first time, expand the filesystem to fill its space and reboot
@@ -80,6 +88,10 @@ the script was developed and tested on a VirtualBox Windows host with Linux Mint
 
 inspired by  
 http://www.aoakley.com/articles/2015-10-09-resizing-sd-images.php
+
+Donations are welcome!
+
+[![PayPal](https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_pp_142x27.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E7JNEDMHAJ3TJ)
 
 - - -
 
