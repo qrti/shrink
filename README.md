@@ -1,9 +1,9 @@
 # shrink
 
 #### linux bash script to resize Raspberry SD card images  
-\- needs a real or VM linux desktop system with hard disk and card reader
+\- needs a real or VM linux desktop system with hard disk and card reader  
 \- cannot handle NOOBS images  
-\- consider also further [remarks](# remarks)
+\- consider also further [remarks](#remarks)
 
 
 #### download  
