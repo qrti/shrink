@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.5 160402 qrt@qland.de
+# shrink V0.6 180119 qrt@qland.de
 # linux bash script to resize Raspberry SD card images 
 #
 # inspired by
@@ -10,16 +10,19 @@
 # sudo apt-get update && sudo apt-get install dcfldd
 # sudo apt-get update && sudo apt-get install gparted
 
-DEVICE=""                   # source and target SD card device
-USER=""                     # linux user name
+DEVICE="/dev/sdd"           # source and target SD card device, examples:  /dev/sdd     /dev/mmcblk0
+PSUF1="1"                   # partition suffix                             1            p1
+PSUF2="2"                   #                                              2            p2
+USER="your user name"       # linux user name
 IMAGE_NAME="image"          # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
 IMAGE="${IMAGE_NAME}.img"   # image name with extension
+LOOP=$(losetup -f)
 
 READ=true                   # read image from SD card (false for an already existing image)
 RESIZE=true                 # resize image with GParted
 FILL=true                   # fill empty space of new image with zeroes, only possible if RESIZE=true
 COMPRESS=false              # compress new image (an extra file is generated)
-WRITE=true                  # write new image to SD card
+WRITE=false                 # write new image to SD card
 
 pause(){
     printf "\n"
@@ -38,7 +41,7 @@ checkDevice(){
     fi
 }
 
-echo "shrink V0.5 160402 qrt@qland.de"
+echo "shrink V0.6 180119 qrt@qland.de"
 
 if [ $(id -u) -ne 0 ]; then
     printf "\n"
@@ -54,8 +57,8 @@ if [ "$USER" == "" ]; then
     exit 1
 fi
 
-PART1="${DEVICE}1"
-PART2="${DEVICE}2"
+PART1="${DEVICE}${PSUF1}"
+PART2="${DEVICE}${PSUF2}"
 
 if [ $READ == true ]; then
     if [ -f $IMAGE ]; then
@@ -82,53 +85,53 @@ if [ $RESIZE == true ]; then
     #read -p "enter Start of part 2: " start
     start="$(sudo parted $IMAGE -ms unit s p | grep "^2" | cut -f2 -d: | sed 's/[^0-9]*//g')"
 
-    sudo losetup -d /dev/loop0 >/dev/null 2>&1  # remove possible open loop
-    sudo losetup /dev/loop0 $IMAGE -o $((start*512)) && echo loop setup ok || exit 1
+    sudo losetup -d $LOOP >/dev/null 2>&1  # remove possible open loop
+    sudo losetup $LOOP $IMAGE -o $((start*512)) && echo loop setup ok || exit 1
 
     echo
     echo "GParted desktop is started now"
     echo "- go to GParted desktop window"
-    echo "- select '/dev/loop0'"
+    echo "- select '$LOOP'"
     echo "- menu 'Partition / Resize/Move'"
     echo "- change value of 'New Size' about >= 250 MB above 'Minimum Size'"
     echo "- press button 'Resize/Move'"
     echo "- menu 'Edit / Apply All Operations' and press Apply"
     echo "- wait until GParted is ready - do not close dialog yet"
-    echo "- expand 'Details / Shrink.. / shrink.. / resize2fs -p /dev/loop0 xxxxxxxK'"
+    echo "- expand 'Details / Shrink.. / shrink.. / resize2fs -p $LOOP xxxxxxxK'"
     echo "- note down size xxxxxxx"
     echo "- close dialog and exit GParted"
 
-    sudo gparted /dev/loop0 >/dev/null 2>&1     # supresses GLib messages
+    sudo gparted $LOOP >/dev/null 2>&1     # supresses GLib messages
 
     echo
     read -p "enter noted size xxxxxxxx: " size
     echo
 
-    sudo losetup -d /dev/loop0          && echo loop remove ok || exit 1
-    sudo losetup /dev/loop0 $IMAGE      && echo loop setup  ok || exit 1
+    sudo losetup -d $LOOP          && echo loop remove ok || exit 1
+    sudo losetup $LOOP $IMAGE      && echo loop setup  ok || exit 1
 
     newsize="+${size}K"
-    printf "d\n2\nn\np\n2\n$start\n$newsize\np\nw\n" | sudo fdisk /dev/loop0 >/dev/null 2>&1
+    printf "d\n2\nn\np\n2\n$start\n$newsize\np\nw\n" | sudo fdisk $LOOP >/dev/null 2>&1
     echo resize ok
 
-    #sudo fdisk -l /dev/loop0
+    #sudo fdisk -l $LOOP
     #read -p "enter End of part 2: " end
-    end="$(sudo parted /dev/loop0 -ms unit s p | grep "^2" | cut -f3 -d: | sed 's/[^0-9]*//g')"
+    end="$(sudo parted $LOOP -ms unit s p | grep "^2" | cut -f3 -d: | sed 's/[^0-9]*//g')"
 
-    sudo losetup -d /dev/loop0          && echo loop remove ok || exit 1
+    sudo losetup -d $LOOP          && echo loop remove ok || exit 1
     truncate -s $(((end+1)*512)) $IMAGE && echo truncate    ok || exit 1
 
     if [ $FILL == true ]; then
         echo
         echo fill empty space
-        sudo losetup /dev/loop0 $IMAGE -o $((start*512))
+        sudo losetup $LOOP $IMAGE -o $((start*512))
         sudo mkdir -p /mnt/imageroot
-        sudo mount /dev/loop0 /mnt/imageroot
+        sudo mount $LOOP /mnt/imageroot
         sudo dcfldd if=/dev/zero of=/mnt/imageroot/zero.txt
         sudo rm /mnt/imageroot/zero.txt
         sudo umount /mnt/imageroot
         sudo rmdir /mnt/imageroot
-        sudo losetup -d /dev/loop0
+        sudo losetup -d $LOOP
         echo fill empty space ok
     fi
 fi
