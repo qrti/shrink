@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.6 180119 qrt@qland.de
+# shrink V0.7 180120 qrt@qland.de
 # linux bash script to resize Raspberry SD card images 
 #
 # inspired by
@@ -10,9 +10,7 @@
 # sudo apt-get update && sudo apt-get install dcfldd
 # sudo apt-get update && sudo apt-get install gparted
 
-DEVICE="/dev/sdd"           # source and target SD card device, examples:  /dev/sdd     /dev/mmcblk0
-PSUF1="1"                   # partition suffix                             1            p1
-PSUF2="2"                   #                                              2            p2
+DEVICE="/dev/sdd"           # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
 USER="your user name"       # linux user name
 IMAGE_NAME="image"          # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
 IMAGE="${IMAGE_NAME}.img"   # image name with extension
@@ -41,7 +39,7 @@ checkDevice(){
     fi
 }
 
-echo "shrink V0.6 180119 qrt@qland.de"
+echo "shrink V0.7 180120 qrt@qland.de"
 
 if [ $(id -u) -ne 0 ]; then
     printf "\n"
@@ -57,9 +55,6 @@ if [ "$USER" == "" ]; then
     exit 1
 fi
 
-PART1="${DEVICE}${PSUF1}"
-PART2="${DEVICE}${PSUF2}"
-
 if [ $READ == true ]; then
     if [ -f $IMAGE ]; then
         pause "file '$IMAGE' already exists and will be overwritten"
@@ -69,7 +64,7 @@ if [ $READ == true ]; then
     pause "insert source SD card and >>> close all popup file manager windows <<<"
     checkDevice $DEVICE
 
-    sudo umount $PART1 $PART2           && echo unmount    ok || exit 1
+    sudo umount $DEVICE?*               && echo unmount    ok || exit 1
     sudo dcfldd if=$DEVICE of=$IMAGE    && echo image read ok || exit 1
     sudo sync
 
@@ -146,7 +141,7 @@ if [ $WRITE == true ]; then
     pause "insert target SD card and >>> close all popup file manager windows <<<"
     checkDevice $DEVICE
 
-    sudo umount $PART1 $PART2           && echo unmount     ok || exit 1
+    sudo umount $DEVICE?*               && echo unmount     ok || exit 1
     sudo dcfldd if=$IMAGE of=$DEVICE    && echo image write ok || exit 1
     sudo sync
 

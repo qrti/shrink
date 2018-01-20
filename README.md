@@ -43,18 +43,14 @@ enter the following at the command line and find the name of your SD device and 
 edit the script and enter your data between the quotation marks  
 `$ nano shrink.sh`
 
-example for /dev/sdd1 + 2
+example for /dev/sdd1 + 2 (omit digit)
 ```
 DEVICE="/dev/sdd"
-PSUF1="1"
-PSUF2="2"
 ```
 
-example for /dev/mmcblk0p1 + p2
+example for /dev/mmcblk0p1 + 2 (omit px)
 ```
 DEVICE="/dev/mmcblk0"
-PSUF1="p1"
-PSUF2="p2"
 ```
 
 fill in your linux user name at USER
@@ -81,8 +77,6 @@ execute script
 #### remarks  
 \- use this script completely at your own risk  
 
-\- cannot handle SD cards with more than two partitions  
-
 \- needs a real or VM linux desktop system with hard disk and card reader  
 
 \- cannot handle NOOBS images  
@@ -90,11 +84,12 @@ execute script
 \- do not shrink images to minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate  
 
 \- when starting from a shrinked SD card for the first time, expand the filesystem to fill its space  
+
 by raspi-config  
 `sudo raspi-config` -> *Expand Filesystem*  
 `sudo reboot`  
-**or**  
-from command line  
+  
+**or** from command line  
 `sudo raspi-config --expand-rootfs`  
 `sudo reboot`  
 
@@ -116,7 +111,10 @@ V0.5
 initial version, script keel fix by Barleyman  
 
 V0.6  
-mmcblk SD naming support
+mmcblk naming support
+
+V0.7  
+simplifications
 
 - - -
 
