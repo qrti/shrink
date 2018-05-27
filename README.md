@@ -116,7 +116,7 @@ mmcblk naming support
 V0.7  
 simplifications
 
-V0.71
+V0.71  
 adaption for parted 3.2, p -> print
 
 - - -
