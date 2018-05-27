@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.7 180120 qrt@qland.de
+# shrink V0.71 180527 qrt@qland.de
 # linux bash script to resize Raspberry SD card images 
 #
 # inspired by
@@ -39,7 +39,7 @@ checkDevice(){
     fi
 }
 
-echo "shrink V0.7 180120 qrt@qland.de"
+echo "shrink V0.71 180527 qrt@qland.de"
 
 if [ $(id -u) -ne 0 ]; then
     printf "\n"
@@ -78,7 +78,7 @@ sudo chown $USER.$USER $IMAGE           && echo owner and group ok || exit 1
 if [ $RESIZE == true ]; then
     #sudo fdisk -l $IMAGE
     #read -p "enter Start of part 2: " start
-    start="$(sudo parted $IMAGE -ms unit s p | grep "^2" | cut -f2 -d: | sed 's/[^0-9]*//g')"
+    start="$(sudo parted $IMAGE -ms unit s print | grep "^2" | cut -f2 -d: | sed 's/[^0-9]*//g')"
 
     sudo losetup -d $LOOP >/dev/null 2>&1  # remove possible open loop
     sudo losetup $LOOP $IMAGE -o $((start*512)) && echo loop setup ok || exit 1
@@ -111,7 +111,7 @@ if [ $RESIZE == true ]; then
 
     #sudo fdisk -l $LOOP
     #read -p "enter End of part 2: " end
-    end="$(sudo parted $LOOP -ms unit s p | grep "^2" | cut -f3 -d: | sed 's/[^0-9]*//g')"
+    end="$(sudo parted $LOOP -ms unit s print | grep "^2" | cut -f3 -d: | sed 's/[^0-9]*//g')"
 
     sudo losetup -d $LOOP          && echo loop remove ok || exit 1
     truncate -s $(((end+1)*512)) $IMAGE && echo truncate    ok || exit 1
