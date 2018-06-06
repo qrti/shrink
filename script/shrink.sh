@@ -10,7 +10,7 @@
 # chmod a+x shrink.sh
 
 # necessary installs
-# sudo apt-get update && sudo apt-get install gparted
+# sudo apt-get install gparted
 # sudo apt-get install pv
 
 DEVICE="/dev/sdb"               # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
