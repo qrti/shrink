@@ -1,26 +1,31 @@
 #!/bin/bash
 
-# shrink V0.71 180527 qrt@qland.de
-# linux bash script to resize Raspberry SD card images 
+# shrink V0.8 180606 qrt@qland.de
+# linux bash script to resize Raspberry SD card images, progress version 
 #
 # inspired by
 # http://www.aoakley.com/articles/2015-10-09-resizing-sd-images.php
-#
-# necessary installs
-# sudo apt-get update && sudo apt-get install dcfldd
-# sudo apt-get update && sudo apt-get install gparted
 
-DEVICE="/dev/sdd"           # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
-USER="your user name"       # linux user name
-IMAGE_NAME="image"          # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
-IMAGE="${IMAGE_NAME}.img"   # image name with extension
+# make script executable once
+# chmod a+x shrink.sh
+
+# necessary installs
+# sudo apt-get update && sudo apt-get install gparted
+# sudo apt-get install pv
+
+DEVICE="/dev/sdb"               # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
+USER="your user name"           # linux user name
+
+IMAGE_NAME="image"              # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
+IMAGE="${IMAGE_NAME}.img"       # image name with extension
+DETAILS=~/gparted_details.htm   # gparted details file path and name
 LOOP=$(losetup -f)
 
-READ=true                   # read image from SD card (false for an already existing image)
-RESIZE=true                 # resize image with GParted
-FILL=true                   # fill empty space of new image with zeroes, only possible if RESIZE=true
-COMPRESS=false              # compress new image (an extra file is generated)
-WRITE=false                 # write new image to SD card
+READ=true                       # read image from SD card (false for an already existing image)
+RESIZE=true                     # resize image with GParted
+FILL=true                       # fill empty space of new image with zeroes, only possible if RESIZE=true
+COMPRESS=false                  # compress new image (an extra file is generated)
+WRITE=false                     # write new image to SD card
 
 pause(){
     printf "\n"
@@ -39,7 +44,7 @@ checkDevice(){
     fi
 }
 
-echo "shrink V0.71 180527 qrt@qland.de"
+echo "shrink V0.8 180606 qrt@qland.de"
 
 if [ $(id -u) -ne 0 ]; then
     printf "\n"
@@ -63,9 +68,12 @@ if [ $READ == true ]; then
 
     pause "insert source SD card and >>> close all popup file manager windows <<<"
     checkDevice $DEVICE
-
+    bsize="$(($(blockdev --getsize64 $DEVICE)/1024))K"
     sudo umount $DEVICE?*               && echo unmount    ok || exit 1
-    sudo dcfldd if=$DEVICE of=$IMAGE    && echo image read ok || exit 1
+    echo
+    echo "generate image from SD card"
+    sudo dd if=$DEVICE status=none | pv -s $bsize | dd of=$IMAGE bs=4096 status=none \
+                                        && echo image read ok || exit 1
     sudo sync
 
     pause "remove SD card"
@@ -92,18 +100,33 @@ if [ $RESIZE == true ]; then
     echo "- press button 'Resize/Move'"
     echo "- menu 'Edit / Apply All Operations' and press Apply"
     echo "- wait until GParted is ready - do not close dialog yet"
-    echo "- expand 'Details / Shrink.. / shrink.. / resize2fs -p $LOOP xxxxxxxK'"
-    echo "- note down size xxxxxxx"
+    echo "- press button 'Save Details' and 'Save' in file requester"
     echo "- close dialog and exit GParted"
-
-    sudo gparted $LOOP >/dev/null 2>&1     # supresses GLib messages
-
-    echo
-    read -p "enter noted size xxxxxxxx: " size
     echo
 
-    sudo losetup -d $LOOP          && echo loop remove ok || exit 1
-    sudo losetup $LOOP $IMAGE      && echo loop setup  ok || exit 1
+    rm -f ~/gparted_details.htm         # remove old details
+
+    sudo gparted $LOOP >/dev/null 2>&1  # supresses GLib messages
+
+    if [ ! -f $DETAILS ]; then          # check details exist
+        echo "gparted details file not found"
+        exit 1
+    fi
+
+    size=$(awk '/resize2fs -p / {print $4;}' $DETAILS | awk 'BEGIN { FS="K"; } { print $1; }')
+
+    rm -f ~/gparted_details.htm         # remove details
+
+    if [ -z $size ]; then               # check size
+        echo "size not found in details"
+        exit 1
+    elif [ $size -lt 512000 ]; then
+        echo "suspicious small filesize"
+        exit 1
+    fi
+
+    sudo losetup -d $LOOP               && echo loop remove ok || exit 1
+    sudo losetup $LOOP $IMAGE           && echo loop setup  ok || exit 1
 
     newsize="+${size}K"
     printf "d\n2\nn\np\n2\n$start\n$newsize\np\nw\n" | sudo fdisk $LOOP >/dev/null 2>&1
@@ -113,7 +136,7 @@ if [ $RESIZE == true ]; then
     #read -p "enter End of part 2: " end
     end="$(sudo parted $LOOP -ms unit s print | grep "^2" | cut -f3 -d: | sed 's/[^0-9]*//g')"
 
-    sudo losetup -d $LOOP          && echo loop remove ok || exit 1
+    sudo losetup -d $LOOP               && echo loop remove ok || exit 1
     truncate -s $(((end+1)*512)) $IMAGE && echo truncate    ok || exit 1
 
     if [ $FILL == true ]; then
@@ -121,8 +144,9 @@ if [ $RESIZE == true ]; then
         echo fill empty space
         sudo losetup $LOOP $IMAGE -o $((start*512))
         sudo mkdir -p /mnt/imageroot
-        sudo mount $LOOP /mnt/imageroot
-        sudo dcfldd if=/dev/zero of=/mnt/imageroot/zero.txt
+        sudo mount $LOOP /mnt/imageroot        
+        bsize="$(($(df -h -B1K | grep ^$LOOP | awk '{print $4}')*11/10))K"      # +10% progress bar fs overhead correction
+        sudo dd if=/dev/zero | pv -s $bsize | dd of=/mnt/imageroot/zero.txt >/dev/null 2>&1        
         sudo rm /mnt/imageroot/zero.txt
         sudo umount /mnt/imageroot
         sudo rmdir /mnt/imageroot
@@ -133,16 +157,20 @@ fi
 
 if [ $COMPRESS == true ]; then
     echo
-    echo compress image
-    zip $IMAGE_NAME.zip $IMAGE          && echo compress    ok || echo compress    failed
+    echo compress image    
+    tar pcf - $IMAGE | pv -s $(du -sb $IMAGE | awk '{print $1}') | gzip > $IMAGE_NAME.tar.gz \
+                                        && echo compress    ok || echo compress    failed
 fi
 
 if [ $WRITE == true ]; then
     pause "insert target SD card and >>> close all popup file manager windows <<<"
     checkDevice $DEVICE
-
+    bsize="$(($(blockdev --getsize64 $DEVICE)/1024))K"
     sudo umount $DEVICE?*               && echo unmount     ok || exit 1
-    sudo dcfldd if=$IMAGE of=$DEVICE    && echo image write ok || exit 1
+    echo
+    echo "write image to SD card"
+    sudo dd if=$IMAGE status=none | pv -s $bsize | dd of=$DEVICE bs=4096 status=none \
+                                        && echo image write ok || exit 1
     sudo sync
 
     echo

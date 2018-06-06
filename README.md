@@ -1,12 +1,16 @@
 # shrink
 
-#### linux bash script to resize Raspberry SD card images  
-\- needs a real or VM linux desktop system with hard disk and card reader  
-\- cannot handle NOOBS images  
-\- consider also further [remarks](#remarks)
+**Linux bash script to resize Raspberry SD card images**  
+consider further [remarks](#remarks)
 
+### new version
+\- automated size retrieving from GParted  
+\- progress bars with ETA for all time consuming actions
 
-#### download  
+**not widely tested yet, be sure to have backups of your data**  
+or use [previous version](readme_071.md)
+
+### download  
 download repository from GitHub,  
 unzip and copy for example to: ~/shrink
 
@@ -28,14 +32,14 @@ clone shrink repository to current directory
 
 - - -
 
-#### necessary installs  
-`$ sudo apt-get update && sudo apt-get install dcfldd`  
-`$ sudo apt-get update && sudo apt-get install gparted`
+### necessary installs  
+`$ sudo apt-get install gparted`  
+`$ sudo apt-get install pv`
 
 - - -
 
-#### configure  
-before executing the script, insert your SD card
+### configure  
+before executing the script the first time, insert your SD card
 
 enter the following at the command line and find the name of your SD device and partitions  
 `$ df -h`
@@ -53,7 +57,7 @@ example for /dev/mmcblk0p1 + 2 (omit px)
 DEVICE="/dev/mmcblk0"
 ```
 
-fill in your linux user name at USER
+fill in your Linux user name at USER
 ```
 USER="your user name"
 ```
@@ -62,40 +66,44 @@ explore the top of the script to configure some more things
 
 - - -
 
-#### execute  
+### execute  
 change directory  
 `$ cd ~/shrink`
 
 make script executable once  
-`$ chmod 755 shrink.sh`
+`$ chmod 755 shrink.sh`  
+**or**  
+`$ chmod a+x shrink.sh`
 
 execute script  
 `$ sudo ./shrink.sh`
 
 - - -
 
-#### remarks  
-\- use this script completely at your own risk  
+### remarks  
+\- use this script completely at your own risk
 
-\- needs a real or VM linux desktop system with hard disk and card reader  
+\- runs on physical or virtual Linux desktop systems
 
-\- cannot handle NOOBS images  
+\- cannot handle NOOBS images
 
-\- do not shrink images to minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate  
+\- do not shrink images to minimum, otherwise they won't start on your Raspberry, especially Raspbian Full *Desktop* images need some extra space, about >= 250 MB are advised, Raspbian *Lite* images might be more moderate
 
-\- when starting from a shrinked SD card for the first time, expand the filesystem to fill its space  
+\- when starting from a shrinked SD card for the first time, expand the filesystem to fill its space
 
 by raspi-config  
 `sudo raspi-config` -> *Expand Filesystem*  
 `sudo reboot`  
-  
-**or** from command line  
+**or**  
+from command line  
 `sudo raspi-config --expand-rootfs`  
 `sudo reboot`  
 
-\- the script is 'half automatic', meaning at one point it will start GParted on desktop and guide you what to do  
+\- the script is 'half automatic', meaning at one point it will start GParted on desktop and guide you what to do
 
-\- the script was developed and tested on a VirtualBox Windows host with Linux Mint guest  
+\- progress display of 'fill empty space' may not end at 100 % exactly because of difficult file system overhead calculation, nevertheless space will be filled correctly
+
+\- the script was developed and tested on a VirtualBox Windows host with Linux Mint guest
 
 \- inspired by  
 [http://www.aoakley.com/articles/2015-10-09-resizing-sd-images.php](http://www.aoakley.com/articles/2015-10-09-resizing-sd-images.php)
@@ -106,7 +114,7 @@ Donations are welcome!
 
 - - -
 
-#### history  
+### history  
 V0.5  
 initial version, script keel fix by Barleyman  
 
@@ -119,9 +127,13 @@ simplifications
 V0.71  
 adaption for parted 3.2, p -> print
 
+V0.8  
+automated size retrieving from GParted  
+progress bars with ETA for all time consuming actions
+
 - - -
 
-#### copyright  
+### copyright  
 shrink is published under the terms of ISC license
 
 Copyright (c) 2018 [qrt@qland.de](mailto:qrt@qland.de)
