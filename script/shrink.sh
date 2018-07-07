@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.8 180606 qrt@qland.de
+# shrink V0.81 180707 qrt@qland.de
 # linux bash script to resize Raspberry SD card images, progress version
 #
 # inspired by
@@ -14,11 +14,11 @@
 # sudo apt-get install pv
 
 ###
-# Configuration
-# Default values can be overridden by passing them as env vars.
+# configuration
+# default values can be overridden by passing them as env vars
 # e.g. sudo DEVICE=/dev/sda READ=false ./shrink.sh
 ###
-USER=${USER:-`whoami`}                    # Specify user who should own output files
+USER=${USER:-`whoami`}                    # specify user who should own output files
 DEVICE=${DEVICE:-/dev/sdb}                # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
 IMAGE_NAME=${IMAGE_NAME:-image}           # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
 IMAGE=${IMAGE:-${IMAGE_NAME}.img}         # image name with extension
@@ -50,7 +50,7 @@ checkDevice(){
     fi
 }
 
-echo "shrink V0.8 180606 qrt@qland.de"
+echo "shrink V0.81 180707 qrt@qland.de"
 
 if [ $(id -u) -ne 0 ]; then
     printf "\n"
