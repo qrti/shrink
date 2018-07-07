@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# shrink V0.8 180606 qrt@qland.de
-# linux bash script to resize Raspberry SD card images, progress version 
+# shrink V0.81 180707 qrt@qland.de
+# linux bash script to resize Raspberry SD card images, progress version
 #
 # inspired by
 # http://www.aoakley.com/articles/2015-10-09-resizing-sd-images.php
@@ -13,19 +13,25 @@
 # sudo apt-get install gparted
 # sudo apt-get install pv
 
-DEVICE="/dev/sdb"               # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
-USER="your user name"           # linux user name
+###
+# configuration
+# default values can be overridden by passing them as env vars
+# e.g. sudo DEVICE=/dev/sda READ=false ./shrink.sh
+###
+USER=${USER:-`whoami`}                    # specify user who should own output files
+DEVICE=${DEVICE:-/dev/sdb}                # source and target SD card device, examples: /dev/sdd, /dev/mmcblk0 ...
+IMAGE_NAME=${IMAGE_NAME:-image}           # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
+IMAGE=${IMAGE:-${IMAGE_NAME}.img}         # image name with extension
+DETAILS=${DETAILS:-~/gparted_details.htm} # gparted details file path and name
 
-IMAGE_NAME="image"              # image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S")"
-IMAGE="${IMAGE_NAME}.img"       # image name with extension
-DETAILS=~/gparted_details.htm   # gparted details file path and name
+READ=${READ:-true}              # read image from SD card (false for an already existing image)
+RESIZE=${RESIZE:-true}          # resize image with GParted
+FILL=${FILL:-true}              # fill empty space of new image with zeroes, only possible if RESIZE=true
+COMPRESS=${COMPRESS:-false}     # compress new image (an extra file is generated)
+WRITE=${WRITE:-false}           # write new image to SD card
+
+
 LOOP=$(losetup -f)
-
-READ=true                       # read image from SD card (false for an already existing image)
-RESIZE=true                     # resize image with GParted
-FILL=true                       # fill empty space of new image with zeroes, only possible if RESIZE=true
-COMPRESS=false                  # compress new image (an extra file is generated)
-WRITE=false                     # write new image to SD card
 
 pause(){
     printf "\n"
@@ -44,7 +50,7 @@ checkDevice(){
     fi
 }
 
-echo "shrink V0.8 180606 qrt@qland.de"
+echo "shrink V0.81 180707 qrt@qland.de"
 
 if [ $(id -u) -ne 0 ]; then
     printf "\n"
@@ -144,9 +150,9 @@ if [ $RESIZE == true ]; then
         echo fill empty space
         sudo losetup $LOOP $IMAGE -o $((start*512))
         sudo mkdir -p /mnt/imageroot
-        sudo mount $LOOP /mnt/imageroot        
+        sudo mount $LOOP /mnt/imageroot
         bsize="$(($(df -h -B1K | grep ^$LOOP | awk '{print $4}')*11/10))K"      # +10% progress bar fs overhead correction
-        sudo dd if=/dev/zero | pv -s $bsize | dd of=/mnt/imageroot/zero.txt >/dev/null 2>&1        
+        sudo dd if=/dev/zero | pv -s $bsize | dd of=/mnt/imageroot/zero.txt >/dev/null 2>&1
         sudo rm /mnt/imageroot/zero.txt
         sudo umount /mnt/imageroot
         sudo rmdir /mnt/imageroot
@@ -157,7 +163,7 @@ fi
 
 if [ $COMPRESS == true ]; then
     echo
-    echo compress image    
+    echo compress image
     tar pcf - $IMAGE | pv -s $(du -sb $IMAGE | awk '{print $1}') | gzip > $IMAGE_NAME.tar.gz \
                                         && echo compress    ok || echo compress    failed
 fi
