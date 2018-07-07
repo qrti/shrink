@@ -5,7 +5,8 @@ consider further [remarks](#remarks)
 
 ### new version
 \- automated size retrieving from GParted  
-\- progress bars with ETA for all time consuming actions
+\- progress bars with ETA for all time consuming actions  
+\- environment variable support
 
 **not widely tested yet, be sure to have backups of your data**  
 or use [previous version](readme_071.md)
@@ -47,20 +48,26 @@ enter the following at the command line and find the name of your SD device and 
 edit the script and enter your data between the quotation marks  
 `$ nano shrink.sh`
 
-example for /dev/sdd1 + 2 (omit digit)
+example for /dev/sdb1 + 2 (omit digit)
 ```
-DEVICE="/dev/sdd"
-```
-
-example for /dev/mmcblk0p1 + 2 (omit px)
-```
-DEVICE="/dev/mmcblk0"
+DEVICE=${DEVICE:-/dev/sdb}
 ```
 
-fill in your Linux user name at USER
+example for /dev/mmcblk0p1 + 2 (omit p and digit)
 ```
-USER="your user name"
+DEVICE=${DEVICE:-/dev/mmcblk0}
 ```
+
+your username is filled in automatically, to override edit USER
+```
+USER=${USER:-`whoami`}
+```
+
+**using environment  variables**  
+default values can be overridden by passing them as env vars
+
+for example to set DEVICE and READ enter at the command line  
+`$ sudo DEVICE=/dev/sdb READ=false ./shrink.sh`
 
 explore the top of the script to configure some more things
 
@@ -130,6 +137,10 @@ adaption for parted 3.2, p -> print
 V0.8  
 automated size retrieving from GParted  
 progress bars with ETA for all time consuming actions
+
+V0.81  
+default value override by environment variables  
+thanks to Leon Miller-Out
 
 - - -
 
