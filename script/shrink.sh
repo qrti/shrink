@@ -59,6 +59,10 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
+# Check script dependencies
+command -v gparted >/dev/null 2>&1 || { echo >&2 "Cannot locate gparted. Is it installed? Aborting."; exit 1; }
+command -v pv >/dev/null 2>&1 || { echo >&2 "Cannot locate pv. Is it installed? Aborting."; exit 1; }
+
 if [ "$USER" == "" ]; then
     printf "\n"
     printf "user not set\n"
