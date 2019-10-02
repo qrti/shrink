@@ -4,16 +4,14 @@
 consider further [remarks](#remarks)
 
 ### new version
-\- argument handling and help screen  
 \- automated size retrieving from GParted  
 \- progress bars with ETA for all time consuming actions  
 \- environment variable support
 
 **not widely tested yet, be sure to have backups of your data**  
-[previous version 0.71](readme_071.md)  
-[previous version 0.81](readme_081.md)
+or use [previous version](readme_071.md)
 
-### download
+### download  
 download repository from GitHub,  
 unzip and copy for example to: ~/shrink
 
@@ -41,55 +39,13 @@ clone shrink repository to current directory
 
 - - -
 
-### configure
-**before executing the script the first time, insert your SD card**
+### configure  
+before executing the script the first time, insert your SD card
 
 enter the following at the command line and find the name of your SD device and partitions  
 `$ df -h`
 
-now extract the device name
-
-example 1 for list entries like:  
-/dev/sdb1 and /dev/sdb2
-
-omit digit at the end  
-
-result:  
-/dev/sdb
-
-example 2 for list entries like:  
-/dev/mmcblk0p1 and /dev/mmcblk0p2
-
-omit p and digit at the end
-
-result:  
-/dev/mmcblk0 
-
-**argument handling and help screen**
-
-```
-Usage:
-  (sudo) ${_ME} [<arguments>]
-  (sudo) ${_ME} -h | --help
-  (sudo) ${_ME} --start
-```
-
-```
-Options:
-  -h --help             Show this screen
-  --user                specify user who should own output files (default: ${USER})
-  --device              source and target SD card device (default: ${DEVICE})
-  --date_name           image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S") (default: ${IMAGE_NAME})"
-  --image               image name with extension (default: ${IMAGE})
-  --details             gparted details file path and name (default: ${DETAILS})
-  --compress            compress new image (an extra file is generated) (default: ${COMPRESS})
-  --write               write new image to SD card (default: ${WRITE})
-  --skip-read           read image from SD card (false for an already existing image) (default: ${READ})
-  --skip-resize         resize image with GParted (default: ${RESIZE})
-  --skip-fill           fill empty space of new image with zeroes, only possible if RESIZE=true (default: ${FILL})
-```
-
-**changing default values by editing the script**  
+edit the script and enter your data between the quotation marks  
 `$ nano shrink.sh`
 
 example for /dev/sdb1 + 2 (omit digit)
@@ -106,7 +62,6 @@ your username is filled in automatically, to override edit USER
 ```
 USER=${USER:-`whoami`}
 ```
-
 
 **using environment  variables**  
 default values can be overridden by passing them as env vars
@@ -187,16 +142,12 @@ V0.81
 default value override by environment variables  
 thanks to Leon Miller-Out
 
-V0.9  
-argument handling and help screen  
-thanks to Pedro Figueiredo e Silva
-
 - - -
 
 ### copyright  
 shrink is published under the terms of ISC license
 
-Copyright (c) 2019 [qrt@qland.de](mailto:qrt@qland.de)
+Copyright (c) 2018 [qrt@qland.de](mailto:qrt@qland.de)
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
