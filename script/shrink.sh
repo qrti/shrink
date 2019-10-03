@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.9 191002 qrt@qland.de
+# shrink V0.91 191003 qrt@qland.de
 # linux bash script to resize Raspberry SD card images, progress version
 #
 # inspired by
@@ -19,7 +19,7 @@
 # e.g. sudo DEVICE=/dev/sda READ=false ./shrink.sh
 ###
 
-SHRINK_VERSION="V0.9 191002"
+SHRINK_VERSION="V0.91 191003"
 
 trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
 
@@ -62,10 +62,10 @@ Necessary installs:
 Usage:
   (sudo) ${_ME} [<arguments>]
   (sudo) ${_ME} -h | --help
-  (sudo) ${_ME} --start
+  (sudo) ${_ME}
 
 Options:
-  -h --help             Show this screen
+  -h --help             show this screen
   --user                specify user who should own output files (default: ${USER})
   --device              source and target SD card device (default: ${DEVICE})
   --date_name           image name, alternative with date and time: "image_$(date +"%y%m%d%H%M%S") (default: ${IMAGE_NAME})"
@@ -182,10 +182,20 @@ function _main
 
         pause "insert source SD card and >>> close all popup file manager windows <<<"
         checkDevice $DEVICE
-        bsize="$(($(blockdev --getsize64 $DEVICE)/1024))K"
+        
+        bsizek=$(($(blockdev --getsize64 $DEVICE)/1024))
+        bsizem=$(($bsizek/1024))
+        freem=$((`df -k --output=avail "$PWD" | tail -n1`/1024))
+
+        if [ $freem -lt $(($bsizem*3)) ]; then
+            pause "warning: free memory "$freem"M is possibly too low for image (+ zip)"
+            echo -ne '\033[1A'              # one line up
+        fi
+
         sudo umount $DEVICE?*               && echo unmount    ok || exit 1
         echo
         echo "generate image from SD card"
+        bsize=$bsizek"K"
         sudo dd if=$DEVICE status=none | pv -s $bsize | dd of=$IMAGE bs=4096 status=none \
                                             && echo image read ok || exit 1
         sudo sync
@@ -215,6 +225,7 @@ function _main
         echo "- menu 'Edit / Apply All Operations' and press Apply"
         echo "- wait until GParted is ready - do not close dialog yet"
         echo "- press button 'Save Details' and 'Save' in file requester"
+        echo "  details are saved to $DETAILS"
         echo "- close dialog and exit GParted"
         echo
 
