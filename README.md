@@ -49,7 +49,7 @@ enter the following at the command line and find the name of your SD device and 
 now extract the device name
 
 example 1 for list entries like:  
-/dev/sdb1 and /dev/sdb2
+/dev/sdb1 + /dev/sdb2
 
 omit digit at the end  
 
@@ -57,7 +57,7 @@ result:
 /dev/sdb
 
 example 2 for list entries like:  
-/dev/mmcblk1p1 and /dev/mmcblk1p2
+/dev/mmcblk1p1 + /dev/mmcblk1p2
 
 omit p and digit at the end
 
@@ -85,6 +85,18 @@ Usage:
   (sudo) shrink.sh
 ```
 
+examples:  
+`$ sudo ./shrink.sh`  
+read, resize and zero fill image
+
+`$ sudo ./shrink.sh` --compress --skip-fill  
+read, resize and compress image without zero fill
+
+`$ sudo ./shrink.sh` --device /dev/mmcblk1  
+read, resize and zero fill image from device /dev/mmcblk1
+
+the help screen shows options and their current default values
+
 ```
 Options:
   -h --help             show this screen
@@ -103,14 +115,18 @@ Options:
 **changing default values by editing the script**  
 `$ nano shrink.sh`
 
-example for /dev/sdb1 + 2 (omit digit)
+example for:  
+/dev/sdb1 + /dev/sdb2  
+omit digit
 ```
 DEVICE=${DEVICE:-/dev/sdb}
 ```
 
-example for /dev/mmcblk0p1 + 2 (omit p and digit)
+example for:  
+/dev/mmcblk1p1 + /dev/mmcblk1p2  
+omit p and digit at the end
 ```
-DEVICE=${DEVICE:-/dev/mmcblk0}
+DEVICE=${DEVICE:-/dev/mmcblk1}
 ```
 
 your username is filled in automatically, to override edit USER
