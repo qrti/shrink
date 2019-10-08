@@ -4,6 +4,7 @@
 consider further [remarks](#remarks)
 
 ### **new version**
+\- dependency tests  
 \- low memory warning  
 \- argument handling and help screen  
 \- automated size retrieving from GParted  
@@ -89,10 +90,10 @@ examples:
 `$ sudo ./shrink.sh`  
 read, resize and zero fill image
 
-`$ sudo ./shrink.sh` --compress --skip-fill  
+`$ sudo ./shrink.sh --compress --skip-fill`  
 read, resize and compress image without zero fill
 
-`$ sudo ./shrink.sh` --device /dev/mmcblk1  
+`$ sudo ./shrink.sh --device /dev/mmcblk1`  
 read, resize and zero fill image from device /dev/mmcblk1
 
 the help screen shows options and their current default values
@@ -217,6 +218,10 @@ thanks to Pedro Figueiredo e Silva
 V0.91  
 low memory warning  
 gparted details path hint
+
+V0.92  
+dependency tests  
+thanks to Tom Troyer
 
 - - -
 
