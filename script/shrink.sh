@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.91 191003 qrt@qland.de
+# shrink V0.92 191008 qrt@qland.de
 # linux bash script to resize Raspberry SD card images, progress version
 #
 # inspired by
@@ -19,7 +19,7 @@
 # e.g. sudo DEVICE=/dev/sda READ=false ./shrink.sh
 ###
 
-SHRINK_VERSION="V0.91 191003"
+SHRINK_VERSION="V0.92 191008"
 
 trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
 
@@ -308,10 +308,13 @@ function _main
 }
 
 
-if [[ "${1:-}" =~ ^-h|--help$ ]]
-then
+if [ "${1:-}" == -h ] || [ "${1:-}" == --help ]; then
     _print_help
 else
+    # check script dependencies
+    command -v gparted >/dev/null 2>&1 || { echo >&2 "Cannot locate gparted. Is it installed? Aborting."; exit 1; }
+    command -v pv      >/dev/null 2>&1 || { echo >&2 "Cannot locate pv. Is it installed? Aborting.";      exit 1; }
+
     echo "calling parser"
     _parse "$@"
     _main "$@"
