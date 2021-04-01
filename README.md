@@ -68,7 +68,7 @@ result:
 **make script executable once**
 
 change directory  
-`$ cd ~/shrink`
+`$ cd ~/shrink/script`
 
 `$ chmod 755 shrink.sh`  
 **or**  
