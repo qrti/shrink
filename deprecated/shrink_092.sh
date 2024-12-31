@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shrink V0.93 241231 qrt@qland.de
+# shrink V0.92 191008 qrt@qland.de
 # linux bash script to resize Raspberry SD card images, progress version
 #
 # inspired by
@@ -19,7 +19,7 @@
 # e.g. sudo DEVICE=/dev/sda READ=false ./shrink.sh
 ###
 
-SHRINK_VERSION="V0.93 241231"
+SHRINK_VERSION="V0.92 191008"
 
 trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
 
@@ -205,7 +205,7 @@ function _main
     fi
 
     echo
-    sudo chown $USER:$USER $IMAGE           && echo owner and group ok || exit 1
+    sudo chown $USER.$USER $IMAGE           && echo owner and group ok || exit 1
 
     if [ $RESIZE == true ]; then
         #sudo fdisk -l $IMAGE

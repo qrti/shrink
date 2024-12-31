@@ -186,7 +186,8 @@ nevertheless space will be filled correctly
 
 Donations are welcome!
 
-[![https://www.paypal.com](https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_pp_142x27.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E7JNEDMHAJ3TJ)
+[![https://www.paypal.com](https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_pp_142x27.png)](https://www.paypal.com/donate?business=qrt@qland.de&currency_code=USD&amount=5.00)
+
 
 ---
 
@@ -223,12 +224,15 @@ V0.92
 dependency tests  
 thanks to Tom Troyer
 
+V0.93
+correction for chown warning
+
 - - -
 
 ### copyright  
 shrink is published under the terms of ISC license
 
-Copyright (c) 2019 [qrt@qland.de](mailto:qrt@qland.de)
+Copyright (c) 2024 [qrt@qland.de](mailto:qrt@qland.de)
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
