@@ -224,7 +224,7 @@ V0.92
 dependency tests  
 thanks to Tom Troyer
 
-V0.93
+V0.93  
 correction for chown warning
 
 - - -
@@ -232,7 +232,7 @@ correction for chown warning
 ### copyright  
 shrink is published under the terms of ISC license
 
-Copyright (c) 2024 [qrt@qland.de](mailto:qrt@qland.de)
+Copyright (c) 2025 [qrt@qland.de](mailto:qrt@qland.de)
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
